@@ -1,0 +1,7 @@
+[package]
+name = "{{ cookiecutter.crate_name }}"
+version = "{{ version }}"
+authors = ["{{ cookiecutter.full_name }} <{{ cookiecutter.email }}>"]
+
+[lib]
+crate-type = ["dylib"]
