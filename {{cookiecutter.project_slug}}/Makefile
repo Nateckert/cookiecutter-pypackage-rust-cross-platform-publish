@@ -1,7 +1,9 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help
+.PHONY: clean clean-test clean-pyc clean-build docs help 
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
+if os.environ.get('TRAVIS_BUILD_NUMBER'):
+	exit(0)
 try:
 	from urllib import pathname2url
 except:
@@ -32,6 +34,7 @@ clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and 
 clean-build: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/
+	rm -fr {{ cookiecutter.project_slug }}/rust/target
 	rm -fr .eggs/
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
@@ -56,6 +59,16 @@ test: ## run tests quickly with the default Python
 	{% else %}
 		python setup.py test
 	{%- endif %}
+
+
+cargo-test: ## build rust lib for local testing. DO NOT USE ON TRAVIS. Cross needs to build for the target
+	cargo test --manifest-path {{ cookiecutter.project_slug }}/rust/Cargo.toml --release
+
+cargo-build: ## build rust lib for local testing. DO NOT USE ON TRAVIS. Cross needs to build for the target
+	cargo build --manifest-path {{ cookiecutter.project_slug }}/rust/Cargo.toml --release
+
+cross-build: clean
+	cross build --manifest-path {{ cookiecutter.project_slug }}/rust/Cargo.toml --target $$TARGET --release
 
 test-all: ## run tests on every Python version with tox
 	tox

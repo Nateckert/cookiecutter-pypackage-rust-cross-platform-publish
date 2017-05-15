@@ -1,6 +1,11 @@
 set -ex
 
 main() {
+    if [ ! -z ${SKIPCROSS+x} ]; then 
+        # This is for local testing. It skips the install.
+        echo "SKIPCROSS is set. This must be a local test"
+        return
+    fi
     local target=
     if [ $TRAVIS_OS_NAME = linux ]; then
         target=x86_64-unknown-linux-musl

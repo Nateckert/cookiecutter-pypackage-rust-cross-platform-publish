@@ -1,12 +1,4 @@
-use std::os::raw::{c_char, c_int};
-use std::ffi::CStr;
-
-#[no_mangle]
-pub extern "C" fn hello(who: *const c_char) -> c_int {
-    let who = unsafe { CStr::from_ptr(who) }.to_string_lossy();
-    println!("Hello {} from Rust!", who);
-    42
-}
+use std::os::raw::c_int;
 
 #[no_mangle]
 pub extern "C" fn is_prime(n: *const c_int) -> c_int {
@@ -22,3 +14,13 @@ pub extern "C" fn is_prime(n: *const c_int) -> c_int {
     }
     1
 } 
+
+#[test]
+fn test_is_prime() {
+    let not_prime = 12;
+    let is_a_prime = 13;
+    let _true: c_int = 1;
+    let _false: c_int = 0;
+    assert_eq!(is_prime(not_prime as *const c_int), _false);
+    assert_eq!(is_prime(is_a_prime as *const c_int), _true);
+}

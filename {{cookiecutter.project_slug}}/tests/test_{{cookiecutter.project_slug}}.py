@@ -15,7 +15,6 @@ import sys
 import unittest
 {%- endif %}
 {%- if cookiecutter.command_line_interface|lower == 'click' %}
-from contextlib import contextmanager
 from click.testing import CliRunner
 {%- endif %}
 
@@ -42,16 +41,25 @@ def test_content(response):
     # assert 'GitHub' in BeautifulSoup(response.content).title.string
 
 
+def test_{{ cookiecutter.project_slug }}():
+    assert {{ cookiecutter.project_slug }}.rust_lib.is_prime(12) is 0
+    assert {{ cookiecutter.project_slug }}.rust_lib.is_prime(13) is 1
 {%- if cookiecutter.command_line_interface|lower == 'click' %}
+
+
 def test_command_line_interface():
     runner = CliRunner()
     result = runner.invoke(cli.main)
     assert result.exit_code == 0
-    assert '{{ cookiecutter.project_slug }}.cli.main' in result.output
+    assert 'Please supply an integer argument ' in result.output
     help_result = runner.invoke(cli.main, ['--help'])
     assert help_result.exit_code == 0
+    print(help_result.output)
     assert '--help  Show this message and exit.' in help_result.output
-
+    non_prime_result = runner.invoke(cli.main, ['12'])
+    assert non_prime_result.output.strip() == "False"
+    prime_result = runner.invoke(cli.main, ['13'])
+    assert prime_result.output.strip() == "True"
 {%- endif %}
 {% else %}
 class Test{{ cookiecutter.project_slug|title }}(unittest.TestCase):
@@ -59,20 +67,34 @@ class Test{{ cookiecutter.project_slug|title }}(unittest.TestCase):
     def setUp(self):
         pass
 
+
     def tearDown(self):
         pass
 
+
     def test_000_something(self):
         pass
+
+
+    def test_{{ cookiecutter.project_slug }}():
+        assert {{ cookiecutter.project_slug }}.rust_lib.is_prime(12) is 0
+        assert {{ cookiecutter.project_slug }}.rust_lib.is_prime(13) is 1
+
+
 {% if cookiecutter.command_line_interface|lower == 'click' %}
     def test_command_line_interface(self):
         runner = CliRunner()
         result = runner.invoke(cli.main)
         assert result.exit_code == 0
-        assert '{{ cookiecutter.project_slug }}.cli.main' in result.output
+        assert 'Please supply an integer argument ' in result.output
         help_result = runner.invoke(cli.main, ['--help'])
         assert help_result.exit_code == 0
+        print(help_result.output)
         assert '--help  Show this message and exit.' in help_result.output
+        non_prime_result = runner.invoke(cli.main, ['12'])
+        assert non_prime_result.output.strip() == "False"
+        prime_result = runner.invoke(cli.main, ['13'])
+        assert prime_result.output.strip() == "True"
 
 {%- endif %}
 {%- endif %}
