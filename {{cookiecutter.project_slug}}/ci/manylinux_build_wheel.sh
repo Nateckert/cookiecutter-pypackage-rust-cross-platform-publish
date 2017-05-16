@@ -1,36 +1,66 @@
 #!/bin/bash
+# Runs in the manylinx Docker container
+# https://github.com/pypa/manylinux
+# https://www.python.org/dev/peps/pep-0513
+
 set -e -x
 
-echo $HOSTUSER
-
 function RETURNOWNERSHIP {
-    chown -Rf --reference=/io/setup.py /io/wheelhouse /root/.cache/pip 
+    # We need to change perms back to user in the end since we run as root in the manylinux container 
+    chown -Rf --reference=/io/setup.py /io /root/.cache/pip /root/.cargo /root/.rustup 
 }
 trap RETURNOWNERSHIP EXIT
 
-function main() {
-    chown -fR root:root /root/.cache/pip 
+export USER='root' 
+chown -fR root:root /root/.cache/pip /root/.cargo /root/.rustup 
+
+function rust_build() {
+    # We build our Rust lib here so it will be compatible with old versions of common shared libs
+    
+    # install rustup inside the manylinux container
+    curl https://sh.rustup.rs -sSf > /tmp/rustup.sh
+    sh /tmp/rustup.sh -y
+    source $HOME/.cargo/env
+    rustup install "stable-$TARGET"
+    rustup default "stable-$TARGET"
+    rustup update
+
+    cd /io/{{cookiecutter.project_slug}}/rust/
+    cargo build --target $TARGET --release
+
+    # disable tests
+    if [ ! -z $DISABLE_TESTS ]; then
+        echo "Rust Tests Disabled"
+    else 
+        cargo test --target $TARGET --release
+    fi
+    # uncomment if creating a bin
+    # cargo run --target $TARGET
+    # cargo run --target $TARGET --release
+
+    if [ ! -d "target/$TARGET/release" ]; then
+        echo "Cannot find release dir at target/$TARGET/release"
+        exit 2
+    else
+        pushd target
+        mv release release.bak || true
+        cp -r $TARGET/release release
+        popd
+    fi
+
+}
+
+function manylinux_test_and_bundle() {
+    cd /io
     rm -rf /io/wheelhouse
 
-
-    # DELETE THIS 
-
-    rm -rf /opt/python/cp26-* 
-    rm -rf /opt/python/cp33-*
-    rm -rf /opt/python/cp34-*
-    rm -rf /opt/python/cp35-*
-
-
-
-    # Compile wheels {cp27*,cp3*}
+    # Skips 2.6
     for PYBIN in /opt/python/{cp27*,cp3*}/bin/; do
-        # "${PYBIN}/pip" uninstall -y auditwheel
         "${PYBIN}/pip" install -U pip virtualenv
-        # sleep 10000
         "${PYBIN}/virtualenv" /tmp/$PYBIN
         source "/tmp${PYBIN}/bin/activate"
-        pip install -U pip
-        pip install -r /io/requirements_dev.txt
+        pip install -q -U pip 
+        pip install -q -r /io/requirements_dev.txt
         pip wheel /io/ -w /io/wheelhouse/
         deactivate
     done
@@ -45,9 +75,6 @@ function main() {
     for PYBIN in /opt/python/{cp27*,cp3*}/bin/; do
         source "/tmp${PYBIN}/bin/activate"
         "${PYBIN}/pip" install {{cookiecutter.project_slug}} --no-index -f /io/wheelhouse
-        # "${PYBIN}/pip" install  --no-index -f /io/wheelhouse
-        sleep 10000
-        # make test
         {% if cookiecutter.use_pytest == 'y' -%}
             py.test /io/tests/
         {% else %}
@@ -58,6 +85,6 @@ function main() {
 }
 
 
-
-main 
+rust_build
+manylinux_test_and_bundle
 RETURNOWNERSHIP
