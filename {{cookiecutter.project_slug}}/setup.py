@@ -2,18 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, Distribution
-
-
-# Wheel thinks we are building a pure python wheel since we use cross for compilation 
-# instead of wheel
-# http://stackoverflow.com/questions/35112511/pip-setup-py-bdist-wheel-no-longer-builds-forced-non-pure-wheels
-# Tested with wheel v0.29.0
-# may fail with different version of wheel
-class BinaryDistribution(Distribution):
-    """Distribution which always forces a binary package with platform name"""
-    def has_ext_modules(foo):
-        return True
-
+try:
+    from setuptools_rust import RustExtension
+except ImportError:
+    import subprocess
+    print("\nsetuptools_rust is required before install - https://pypi.python.org/pypi/setuptools-rust")
+    print("attempting to install with pip...")
+    print(subprocess.check_output(["pip", "install", "setuptools_rust"]))
+    from setuptools_rust import RustExtension
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -30,7 +26,10 @@ requirements = [
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
+    {% if cookiecutter.use_pytest == 'y' -%}
+    'pytest>=2.9.2',
+    'pytest-runner>=2.0'
+    {%- endif %}
 ]
 
 {%- set license_classifiers = {
@@ -42,7 +41,6 @@ test_requirements = [
 } %}
 
 setup(
-    distclass=BinaryDistribution,
     name='{{ cookiecutter.project_slug }}',
     version='{{ cookiecutter.version }}',
     description="{{ cookiecutter.project_short_description }}",
@@ -68,6 +66,9 @@ setup(
     license="{{ cookiecutter.open_source_license }}",
 {%- endif %}
     zip_safe=False,
+    rust_extensions=[
+        RustExtension('{{ cookiecutter.crate_name }}', '{{ cookiecutter.project_slug }}/rust/Cargo.toml',
+                       debug=False, no_binding=True)],
     keywords='{{ cookiecutter.project_slug }}',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
@@ -86,4 +87,9 @@ setup(
     ],
     test_suite='tests',
     tests_require=test_requirements,
+    setup_requires=['setuptools_rust',
+    {% if cookiecutter.use_pytest == 'y' -%}
+                    'pytest-runner>=2.0',
+    {%- endif %}
+    ]
 )
