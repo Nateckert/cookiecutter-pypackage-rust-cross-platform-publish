@@ -1,16 +1,32 @@
 ======================
-Cookiecutter PyPackage
+Cookiecutter PyPackage Rust Cross-Platform Publish
 ======================
 
-.. image:: https://pyup.io/repos/github/audreyr/cookiecutter-pypackage/shield.svg
-     :target: https://pyup.io/repos/github/audreyr/cookiecutter-pypackage/
-     :alt: Updates
+Cookiecutter_ template for a Python package with a Rust binary module.
 
-Cookiecutter_ template for a Python package.
+Rust is a new systems programming language that is comprable in speed with C/C++; 
+but it also has lots of nice modern features like memory safety, a package manager, 
+and a sophisticated type system. 
 
-* GitHub repo: https://github.com/audreyr/cookiecutter-pypackage/
-* Documentation: https://cookiecutter-pypackage.readthedocs.io/
-* Free software: BSD license
+Like C/C++, Rust can be called from Python. The goal of the project is to make 
+it easy to start a Python project that includes a binary module written in Rust. 
+A very important goal of the project is that it be able to produce a binary 
+distribution (Wheel) which will not require the end user to actually compile 
+the Rust code themselves. 
+
+An example output of this cookiecutter can be seen at trust_pypi_example_. 
+In the example I wrote a cli in Python that interops via CFFI with a Rust binary.
+I used a tool called setuptools-rust which enables setuptools to handle compiling 
+just like it would with C.
+
+
+Currently supported platforms
+-----------------------------
+* manylinux_X86_64
+* OSX (i think)
+* Windows is coming soon
+
+Based on Cookiecutter_
 
 Features
 --------
@@ -24,21 +40,7 @@ Features
 * Command line interface using Click (optional)
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
-
-Build Status
--------------
-
-Linux:
-
-.. image:: https://img.shields.io/travis/audreyr/cookiecutter-pypackage.svg
-    :target: https://travis-ci.org/audreyr/cookiecutter-pypackage
-    :alt: Linux build status on Travis CI
-
-Windows:
-
-.. image:: https://ci.appveyor.com/api/projects/status/github/audreyr/cookiecutter-pypackage?branch=master&svg=true
-    :target: https://ci.appveyor.com/project/audreyr/cookiecutter-pypackage/branch/master
-    :alt: Windows build status on Appveyor
+.. _trust_pypi_example: https://github.com/mckaymatt/trust_pypi_example
 
 Quickstart
 ----------
@@ -50,7 +52,7 @@ Cookiecutter 1.4.0 or higher)::
 
 Generate a Python package project::
 
-    cookiecutter https://github.com/audreyr/cookiecutter-pypackage.git
+    cookiecutter https://github.com/mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish.git
 
 Then:
 
@@ -70,46 +72,6 @@ Then:
 For more details, see the `cookiecutter-pypackage tutorial`_.
 
 .. _`cookiecutter-pypackage tutorial`: https://cookiecutter-pypackage.readthedocs.io/en/latest/tutorial.html
-
-Not Exactly What You Want?
---------------------------
-
-Don't worry, you have options:
-
-Similar Cookiecutter Templates
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* `Nekroze/cookiecutter-pypackage`_: A fork of this with a PyTest test runner,
-  strict flake8 checking with Travis/Tox, and some docs and `setup.py` differences.
-
-* `tony/cookiecutter-pypackage-pythonic`_: Fork with py2.7+3.3 optimizations.
-  Flask/Werkzeug-style test runner, ``_compat`` module and module/doc conventions.
-  See ``README.rst`` or the `github comparison view`_ for exhaustive list of
-  additions and modifications.
-
-* `ardydedase/cookiecutter-pypackage`_: A fork with separate requirements files rather than a requirements list in the ``setup.py`` file.
-
-* Also see the `network`_ and `family tree`_ for this repo. (If you find
-  anything that should be listed here, please add it and send a pull request!)
-
-Fork This / Create Your Own
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you have differences in your preferred setup, I encourage you to fork this
-to create your own version. Or create your own; it doesn't strictly have to
-be a fork.
-
-* Once you have your own version working, add it to the Similar Cookiecutter
-  Templates list above with a brief description.
-
-* It's up to you whether or not to rename your fork/own version. Do whatever
-  you think sounds good.
-
-Or Submit a Pull Request
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-I also accept pull requests on this, if they're small, atomic, and if they
-make my own packaging experience better.
 
 
 .. _Travis-CI: http://travis-ci.org/
