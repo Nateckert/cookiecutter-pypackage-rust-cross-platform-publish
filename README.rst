@@ -20,17 +20,15 @@ I used a tool called setuptools-rust which enables setuptools to handle compilin
 just like it would with C.
 
 
-Currently supported platforms
+Supported platforms
 -----------------------------
-* manylinux_X86_64
+* manylinux_X86_64 and manylinux_i686
 * OSX (i think)
 * Windows is coming soon
 
-Based on Cookiecutter_
-
 Features
 --------
-
+* manylinuyx support - see https://github.com/pypa/manylinux
 * Testing setup with ``unittest`` and ``python setup.py test`` or ``py.test``
 * Travis-CI_: Ready for Travis Continuous Integration testing
 * Tox_ testing: Setup to easily test for Python 2.6, 2.7, 3.3, 3.4, 3.5
