@@ -2,9 +2,9 @@
 Cookiecutter PyPackage Rust Cross-Platform Publish
 ======================
 
-Cookiecutter_ template for a Python package with a Rust binary module.
+Cookiecutter_ template for a Python package with a Rust binary module. 
 
-Rust is a new systems programming language that is comprable in speed with C/C++; 
+Rust is a new systems programming language that is comparable in speed with C/C++; 
 but it also has lots of nice modern features like memory safety, a package manager, 
 and a sophisticated type system. 
 
@@ -19,18 +19,20 @@ In the example I wrote a cli in Python that interops via CFFI with a Rust binary
 I used a tool called setuptools-rust which enables setuptools to handle compiling 
 just like it would with C.
 
+A binary wheel is produced for Linux and OSX by TravisCI_. A windows wheel is built for Windows with appveyor_. 
+
 
 Supported platforms
 -----------------------------
 * manylinux_X86_64 and manylinux_i686
-* OSX (i think)
-* Windows is coming soon
+* OSX 
+* Windows
 
 Features
 --------
 * manylinuyx support - see https://github.com/pypa/manylinux
 * Testing setup with ``unittest`` and ``python setup.py test`` or ``py.test``
-* Travis-CI_: Ready for Travis Continuous Integration testing
+* TravisCI_: Ready for Travis Continuous Integration testing
 * Tox_ testing: Setup to easily test for Python 2.6, 2.7, 3.3, 3.4, 3.5
 * Sphinx_ docs: Documentation ready for generation with, for example, ReadTheDocs_
 * Bumpversion_: Pre-configured version bumping with a single command
@@ -38,6 +40,7 @@ Features
 * Command line interface using Click (optional)
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _appveyor: https://www.appveyor.com/
 .. _trust_pypi_example: https://github.com/mckaymatt/trust_pypi_example
 
 Quickstart
@@ -55,7 +58,7 @@ Generate a Python package project::
 Then:
 
 * Create a repo and put it there.
-* Add the repo to your Travis-CI_ account.
+* Add the repo to your TravisCI_ account.
 * Install the dev requirements into a virtualenv. (``pip install -r requirements_dev.txt``)
 * Run the script `travis_pypi_setup.py` to encrypt your PyPI password in Travis config
   and activate automated deployment on PyPI when you push a new tag to master branch.
@@ -72,7 +75,7 @@ For more details, see the `cookiecutter-pypackage tutorial`_.
 .. _`cookiecutter-pypackage tutorial`: https://cookiecutter-pypackage.readthedocs.io/en/latest/tutorial.html
 
 
-.. _Travis-CI: http://travis-ci.org/
+.. _TravisCI: http://travis-ci.org/
 .. _Tox: http://testrun.org/tox/
 .. _Sphinx: http://sphinx-doc.org/
 .. _ReadTheDocs: https://readthedocs.io/
