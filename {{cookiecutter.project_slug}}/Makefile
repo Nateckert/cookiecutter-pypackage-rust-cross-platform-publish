@@ -1,4 +1,4 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help 
+.PHONY: clean clean-test clean-pyc clean-build clean-venv docs help install dist release test test-all 
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
@@ -28,7 +28,7 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
+clean: clean-build clean-pyc clean-test clean-venv ## remove all build, test, coverage, Python artifacts and virtualenv
 
 
 clean-build: ## remove build artifacts
@@ -36,8 +36,9 @@ clean-build: ## remove build artifacts
 	rm -fr dist/
 	rm -fr {{ cookiecutter.project_slug }}/rust/target
 	rm -fr .eggs/
+	rm -f *.so *.dylib *.dll 
 	find . -name '*.egg-info' -exec rm -fr {} +
-	find . -name '*.egg' -exec rm -f {} +
+	find . -name '*.egg' -exec rm -fr {} +
 
 clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyc' -exec rm -f {} +
@@ -50,58 +51,56 @@ clean-test: ## remove test and coverage artifacts
 	rm -f .coverage
 	rm -fr htmlcov/
 
-lint: ## check style with flake8
-	flake8 {{ cookiecutter.project_slug }} tests
+clean-venv:
+	rm -rf venv
 
-test: ## run tests quickly with the default Python
+lint: venv ## check style with flake8
+	venv/bin/flake8 {{ cookiecutter.project_slug }} tests
+
+test: venv ## This will use py.test because of pytest-runner
+	venv/bin/python setup.py check
+	venv/bin/python setup.py test
+
+venv:  ## set up a virtualenv that will by python and install dependencies
+	python -m virtualenv venv || python -m venv venv
+	venv/bin/pip install -r requirements_dev.txt
+
+
+test-all: venv ## run tests on every Python version with tox
+	venv/bin/tox
+
+coverage: venv ## check code coverage quickly with the default Python
 	{% if cookiecutter.use_pytest == 'y' -%}
-		py.test
+		venv/bin/coverage run --source {{ cookiecutter.project_slug }} -m pytest
 	{% else %}
-		python setup.py test
-	{%- endif %}
-
-
-cargo-test: ## build rust lib for local testing. DO NOT USE ON TRAVIS. Cross needs to build for the target
-	cargo test --manifest-path {{ cookiecutter.project_slug }}/rust/Cargo.toml --release
-
-cargo-build: ## build rust lib for local testing. DO NOT USE ON TRAVIS. Cross needs to build for the target
-	cargo build --manifest-path {{ cookiecutter.project_slug }}/rust/Cargo.toml --release
-
-cross-build: clean
-	cross build --manifest-path {{ cookiecutter.project_slug }}/rust/Cargo.toml --target $$TARGET --release
-
-test-all: ## run tests on every Python version with tox
-	tox
-
-coverage: ## check code coverage quickly with the default Python
-	{% if cookiecutter.use_pytest == 'y' -%}
-		coverage run --source {{ cookiecutter.project_slug }} -m pytest
-	{% else %}
-		coverage run --source {{ cookiecutter.project_slug }} setup.py test
+		venv/bin/coverage run --source {{ cookiecutter.project_slug }} setup.py test
 	{% endif %}
-		coverage report -m
-		coverage html
+		venv/bin/coverage report -m
+		venv/bin/coverage html
 		$(BROWSER) htmlcov/index.html
 
-docs: ## generate Sphinx HTML documentation, including API docs
+docs: venv ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/{{ cookiecutter.project_slug }}.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ {{ cookiecutter.project_slug }}
+	venv/bin/sphinx-apidoc -o docs/ {{ cookiecutter.project_slug }}
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
 
-servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+servedocs: venv docs ## compile the docs watching for changes
+	venv/bin/watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
-release: clean ## package and upload a release
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+release: venv clean ## package and upload a release
+	venv/bin/python setup.py sdist upload
+	venv/bin/python setup.py bdist_wheel upload
 
-dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
+dist: venv clean ## builds source and wheel package
+	venv/bin/python setup.py sdist
+	venv/bin/python setup.py bdist_wheel
 	ls -l dist
 
-install: clean ## install the package to the active Python's site-packages
-	python setup.py install
+install: venv clean ## install the package to the active Python's site-packages
+	venv/bin/python setup.py install
+
+
+local-test: clean test coverage dist install 

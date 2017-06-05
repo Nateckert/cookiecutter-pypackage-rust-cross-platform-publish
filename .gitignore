@@ -97,3 +97,9 @@ python_boilerplate/
 
 # SSHFS
 .Trash-1000/
+
+# virtualenv
+.venv
+
+# rust demo project 
+trust_pypi_example
