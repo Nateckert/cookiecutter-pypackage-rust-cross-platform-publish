@@ -3,7 +3,7 @@
 
 from setuptools import setup, Distribution
 try:
-    from setuptools_rust import RustExtension
+    from setuptools_rust import RustExtension, Binding
 except ImportError:
     import subprocess
     print("\nsetuptools_rust is required before install - https://pypi.python.org/pypi/setuptools-rust")
@@ -68,7 +68,7 @@ setup(
     zip_safe=False,
     rust_extensions=[
         RustExtension('{{ cookiecutter.crate_name }}', '{{ cookiecutter.project_slug }}/rust/Cargo.toml',
-                       debug=False, no_binding=True)],
+                       debug=False, binding=Binding.NoBinding)],
     keywords='{{ cookiecutter.project_slug }}',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

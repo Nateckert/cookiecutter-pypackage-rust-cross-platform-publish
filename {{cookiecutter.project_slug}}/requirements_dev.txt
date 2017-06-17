@@ -14,5 +14,4 @@ pytest-runner>=2.0
 {% if cookiecutter.command_line_interface.lower() == 'click' -%}
 Click>=6.0{%- endif %}
 
-# install fork of setuptools-rust which doesn't require pyo3 or rust-cython
-https://github.com/mckaymatt/setuptools-rust/archive/master.zip
+-e git://github.com/PyO3/setuptools-rust.git@706c499a1a390ab2d175d5b44116ea5cd8097bb2#egg=setuptools_rust
