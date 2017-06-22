@@ -7,6 +7,9 @@ environment:
   # TODO This is the Rust channel that build jobs will use by default but can be
   # overridden on a case by case basis down below
     RUST_VERSION: stable
+    TWINE_USERNAME: mckaymatt
+    TWINE_PASSWORD:
+      secure: 4EVS6uB7j1M9/KmSzc8g/DGha3tRVlC0YuL5ugK16uE=
 
   # TODO These are all the build jobs. Adjust as necessary. Comment out what you
   # don't need
@@ -44,6 +47,7 @@ matrix:
 
 init:
   - "%PYTHON_DIR%\\python.exe -m pip install pip==9.0.1 scikit-ci==0.14.0"
+  - "%PYTHON_DIR%\\python.exe -m pip install -U urllib3[secure]"
 
 install:
   - ps: >-
@@ -66,31 +70,32 @@ test_script:
   - "%PYTHON_DIR%\\python -m ci test"
   - ps: >-
       Get-ChildItem .\dist\
-  - ps: >-
-      Get-ChildItem -R {{ cookiecutter.project_slug }}\
-
 
 artifacts:
   - path:  '**\*.whl'
     type: File
     name: {{ cookiecutter.project_slug }}
 
+before_deploy:
+  # appveyor deploy is flaky for wheels
+  # upload to pypi with twine when there is a new tag
+  - cmd: if %APPVEYOR_REPO_TAG% equ true (%PYTHON_DIR%\\python -m ci after_test)
+
 deploy:
-  provider: GitHub
-  # TODO update `auth_token.secure`
-  # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
-  # - Encrypt it. Go to https://ci.appveyor.com/tools/encrypt
-  # - Paste the output down here
-  auth_token:
-    secure: Z4WsdThBV6yomQH4V2M/T5/q1khChRPklJ+xDILxO34QGwcbqH2H0wlWvX+B+B89
-  description: "{{ cookiecutter.project_slug }}"
-  on:
-    # TODO Here you can pick which targets will generate binary releases
-    # In this example, there are some targets that are tested using the stable
-    # and nightly channels. This condition makes sure there is only one release
-    # for such targets and that's generated using the stable channel
-    RUST_VERSION: stable
-    appveyor_repo_tag: true
+  - provider: GitHub
+    # TODO update `auth_token.secure`
+    # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
+    # - Encrypt it. Go to https://ci.appveyor.com/tools/encrypt
+    # - Paste the output down here
+    auth_token:
+      secure: Z4WsdThBV6yomQH4V2M/T5/q1khChRPklJ+xDILxO34QGwcbqH2H0wlWvX+B+B89
+    description: "{{ cookiecutter.project_slug }}"
+    on:
+      # TODO Here you can pick which targets will generate binary releases
+      # In this example, there are some targets that are tested using the stable
+      # and nightly channels. This condition makes sure there is only one release
+      # for such targets and that's generated using the stable channel
+      appveyor_repo_tag: true
 
 cache:
   - C:\Users\appveyor\.cargo\registry

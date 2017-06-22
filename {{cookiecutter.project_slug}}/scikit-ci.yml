@@ -25,11 +25,12 @@ install:
 
 before_build:
   commands:
-    - $<RUN_ENV> $<PYTHON> setup.py clean
+    - $<RUN_ENV> $<PYTHON> setup.py --verbose  clean
 
 build:
   commands:
-    - $<RUN_ENV> $<PYTHON> setup.py bdist_wheel --plat-name=$<WHEELPLATFORM>
+    - $<RUN_ENV> $<PYTHON> setup.py --verbose build_ext
+    - $<RUN_ENV> $<PYTHON> setup.py --verbose bdist_wheel --plat-name=$<WHEELPLATFORM>
 
 test:
   appveyor:
@@ -37,15 +38,15 @@ test:
       PATH: $<PYTHON_DIR>\\Scripts;$<PATH>
 
   commands:
-    - $<RUN_ENV> $<PYTHON> setup.py test
+    - $<RUN_ENV> $<PYTHON> setup.py --verbose test
 
-# after_test:
+after_test:
+  # commands:
+  #   - $<RUN_ENV> $<PYTHON> -m pip install --upgrade twine urllib3[secure]
+  #   - $<RUN_ENV> $<PYTHON> -m twine upload wheelhouse/*
 
-#   commands:
-#     - $<RUN_ENV> codecov -X gcov --required --file ./tests/coverage.xml
-#     - $<RUN_ENV> $<PYTHON> setup.py bdist_wheel
+  appveyor:
+    commands:
+    - $<RUN_ENV> $<PYTHON> -m pip install --upgrade twine urllib3[secure]
+    - $<RUN_ENV> $<PYTHON> -m twine upload dist\*
 
-#   appveyor:
-#     commands:
-#       - $<RUN_ENV> $<PYTHON> setup.py bdist_wininst
-#       - $<RUN_ENV> $<PYTHON> setup.py bdist_msi

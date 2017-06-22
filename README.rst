@@ -14,7 +14,7 @@ A very important goal of the project is that it be able to produce a binary
 distribution (Wheel) which will not require the end user to actually compile 
 the Rust code themselves. 
 
-An example output of this cookiecutter can be seen at trust_pypi_example_. 
+An example output of this cookiecutter can be seen at rust_pypi_example_. 
 In the example I wrote a cli in Python that interops via CFFI with a Rust binary.
 I used a tool called setuptools-rust which enables setuptools to handle compiling 
 just like it would with C.
@@ -42,7 +42,7 @@ Features
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _appveyor: https://www.appveyor.com/
-.. _trust_pypi_example: https://github.com/mckaymatt/trust_pypi_example
+.. _rust_pypi_example: https://github.com/mckaymatt/rust_pypi_example
 
 Quickstart
 ----------
