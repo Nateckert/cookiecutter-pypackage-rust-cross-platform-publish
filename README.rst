@@ -21,12 +21,12 @@ for Windows with appveyor_.
 Example Output
 --------------
 
-An exmple project made by this cookiecutter can be seen on github at mckaymatt/rust_pypi_example_. 
+An exmple project made by this cookiecutter can be seen on github at rust_pypi_example_. 
 In the example I wrote a cli in Python that interops via CFFI with a Rust binary.
-I used a tool called PyO3/setuptools-rust_ which enables setuptools to handle compiling 
+I used a tool called setuptools-rust_ which enables setuptools to handle compiling 
 just like it would with C.
 
-The binary wheels can be seen on Pypi at pypi.python.org/pypi/rust-pypi-example_. 
+The binary wheels can be seen on Pypi at pypi-rust-pypi-example_. 
 You should be able to install the package on your platform with::
 
     pip install rust_pypi_example
@@ -54,9 +54,9 @@ Features
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _appveyor: https://www.appveyor.com/
-.. _mckaymatt/rust_pypi_example: https://github.com/mckaymatt/rust_pypi_example
-.. _PyO3/setuptools-rust: https://github.com/PyO3/setuptools-rust
-.. _pypi.python.org/pypi/rust-pypi-example: https://pypi.python.org/pypi/rust-pypi-example
+.. _rust_pypi_example: https://github.com/mckaymatt/rust_pypi_example
+.. _setuptools-rust: https://github.com/PyO3/setuptools-rust
+.. _pypi-rust-pypi-example: https://pypi.python.org/pypi/rust-pypi-example
 .. _issue: https://github.com/mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish/issues/new
 
 Quickstart
