@@ -13,6 +13,5 @@ pytest-runner>=2.0
 {%- endif %}
 {% if cookiecutter.command_line_interface.lower() == 'click' -%}
 Click>=6.0{%- endif %}
-twine
-
--e git://github.com/PyO3/setuptools-rust.git@706c499a1a390ab2d175d5b44116ea5cd8097bb2#egg=setuptools_rust
+twine>=1.9.1
+setuptools-rust>=0.6.0
